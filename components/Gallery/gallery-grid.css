@@ -95,22 +95,23 @@
   cursor: pointer;
 }
 
-/* ── Responsive: fewer visible images on smaller screens ── */
+/* ── Responsive: larger cells on smaller screens ── */
 @media (max-width: 768px) {
   .gallery-grid {
-    width: 320vw;
-    height: 320vh;
+    width: 450vw;
+    height: 450vh;
     gap: 0.4rem;
   }
   .gallery-row {
     gap: 0.4rem;
+    grid-template-columns: repeat(9, 1fr) !important;
   }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
   .gallery-grid {
-    width: 240vw;
-    height: 240vh;
+    width: 300vw;
+    height: 300vh;
   }
 }
 

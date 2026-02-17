@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { slideUp } from './anim';
 
 const terminalMessages = [
-  { text: '*** Welcome to the KeyGEnCoders Mainframe ***', delay: 300 },
+  { text: 'Welcome to the KeyGEnCoders Mainframe', delay: 300 },
   { text: 'Initializing hardware... [OK]', delay: 400 },
   { text: 'Loading system files... [OK]', delay: 500 },
   { text: 'Booting kernel v3.2.1... [OK]', delay: 400 },

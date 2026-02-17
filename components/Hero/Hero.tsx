@@ -79,24 +79,32 @@ export default function Hero() {
                 KeyGEnCoders
               </FuzzyText>
             </div>
-            <div className="hero-subtitle-wrapper flex flex-col items-center">
+            {/* <div className="hero-subtitle-wrapper flex flex-col items-center gap-1">
               <FuzzyText 
                 baseIntensity={0.1} 
                 hoverIntensity={0.2} 
-                fontSize="clamp(1rem, 2vw, 1.5rem)"
+                fontSize="clamp(0.55rem, 2vw, 1.5rem)"
                 color="#a3a3a3"
               >
-                The elite coding community of Kalyani Government Engineering college.
+                The elite coding community of
               </FuzzyText>
               <FuzzyText 
                 baseIntensity={0.1} 
                 hoverIntensity={0.2} 
-                fontSize="clamp(1rem, 2vw, 1.5rem)"
+                fontSize="clamp(0.55rem, 2vw, 1.5rem)"
+                color="#a3a3a3"
+              >
+                Kalyani Government Engineering College.
+              </FuzzyText>
+              <FuzzyText 
+                baseIntensity={0.1} 
+                hoverIntensity={0.2} 
+                fontSize="clamp(0.55rem, 2vw, 1.5rem)"
                 color="#a3a3a3"
               >
                 Pushing the boundaries of innovation and technology.
               </FuzzyText>
-            </div>
+            </div> */}
           </motion.div>
 
           <motion.div 
