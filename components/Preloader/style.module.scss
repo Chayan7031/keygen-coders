@@ -1,35 +1,60 @@
-.introduction{
+.introduction {
     height: 100vh;
     width: 100vw;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
     position: fixed;
     z-index: 99;
-    background-color: black;
-    svg{
-        position: absolute;
-        top: 0;
-        width: 100%;
-        height: calc(100% + 300px);
-        path{
-            fill: #141516;
-        }
+    background-color: #000;
+    background: radial-gradient(ellipse at center, #0a1f0a, #000);
+    padding: 2rem;
+    overflow: hidden;
+}
+
+.terminal {
+    width: 100%;
+    max-width: 800px;
+    font-family: var(--font-vt323), 'Courier New', monospace;
+    font-size: 1.4rem;
+    color: #66ff66;
+    text-shadow: 0 0 5px rgba(102, 255, 102, 0.5);
+    line-height: 1.6;
+}
+
+.terminalHistory {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        margin-bottom: 0.15rem;
+        opacity: 0.85;
     }
-    p{
-        display: flex;
-        color: white;
-        font-size: 42px;
-        align-items: center;
-        position: absolute;
-        z-index: 1;
-        span{
-            display: block;
-            width: 10px;
-            height: 10px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
+}
+
+.terminalInput {
+    display: flex;
+    align-items: center;
+}
+
+.prompt {
+    color: #66ff66;
+    margin-right: 0.3rem;
+    user-select: none;
+}
+
+.caret {
+    display: inline-block;
+    width: 10px;
+    height: 1.4rem;
+    background-color: #66ff66;
+    vertical-align: middle;
+    animation: blink 1s steps(2) infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
     }
 }

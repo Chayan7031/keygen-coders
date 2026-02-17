@@ -85,3 +85,8 @@
   background-color: rgb(34,197,94);
   border-radius: 10px;
 }
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.8; filter: brightness(1.3); }
+}

@@ -1,0 +1,230 @@
+/* ── Gallery Section ────────────────────────── */
+.gallery-section {
+  width: 100%;
+  padding: 4rem 0 2rem;
+  text-align: center;
+  background: #000;
+  position: relative;
+}
+
+.gallery-heading {
+  font-size: clamp(3rem, 2.5rem + 1.6vw, 5rem);
+  font-weight: 800;
+  color: #22c55e;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.035rem;
+}
+
+.gallery-subtitle {
+  text-transform: uppercase;
+  display: block;
+  font-size: 1.1rem;
+  color: #a3a3a3;
+  letter-spacing: 0.12rem;
+}
+
+.gallery-description {
+  color: #a3a3a3;
+  max-width: 50rem;
+  margin: 0 auto 1rem;
+  font-size: clamp(0.9rem, 0.825rem + 0.3vw, 1.1rem);
+  line-height: 1.6;
+}
+
+/* ── Rotated Grid Container ────────────────── */
+.gallery-intro {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+
+
+/* ── Rotated Grid ──────────────────────────── */
+.gallery-grid {
+  gap: 0.5rem;
+  flex: none;
+  position: relative;
+  width: 180vw;
+  height: 180vh;
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  grid-template-columns: 100%;
+  transform: rotate(-15deg);
+  transform-origin: center center;
+}
+
+/* ── Row — varied column sizes ─────────────── */
+.gallery-row {
+  display: grid;
+  gap: 0.5rem;
+  will-change: transform, filter;
+}
+
+/* Each row has a different column pattern for varied sizes */
+.gallery-row:nth-child(1) {
+  grid-template-columns: 2fr 1fr 1.5fr 1fr 2fr 1.5fr 1fr 1.5fr 1fr;
+}
+.gallery-row:nth-child(2) {
+  grid-template-columns: 1fr 1.5fr 2fr 1fr 1fr 2fr 1.5fr 1fr 1.5fr;
+}
+.gallery-row:nth-child(3) {
+  grid-template-columns: 1.5fr 1fr 1fr 2fr 1fr 1fr 1.5fr 2fr 1fr;
+}
+.gallery-row:nth-child(4) {
+  grid-template-columns: 1fr 2fr 1fr 1.5fr 2fr 1fr 1.5fr 1fr 2fr;
+}
+.gallery-row:nth-child(5) {
+  grid-template-columns: 2fr 1fr 1.5fr 1fr 1.5fr 2fr 1fr 1.5fr 1fr;
+}
+.gallery-row:nth-child(6) {
+  grid-template-columns: 1fr 1.5fr 1fr 2fr 1fr 1.5fr 2fr 1fr 1.5fr;
+}
+.gallery-row:nth-child(7) {
+  grid-template-columns: 1.5fr 2fr 1fr 1fr 1.5fr 1fr 2fr 1.5fr 1fr;
+}
+
+/* ── Row Item ──────────────────────────────── */
+.gallery-row__item {
+  position: relative;
+  cursor: pointer;
+}
+
+/* ── Responsive: fewer visible images on smaller screens ── */
+@media (max-width: 768px) {
+  .gallery-grid {
+    width: 320vw;
+    height: 320vh;
+    gap: 0.4rem;
+  }
+  .gallery-row {
+    gap: 0.4rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .gallery-grid {
+    width: 240vw;
+    height: 240vh;
+  }
+}
+
+.gallery-row__item-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.gallery-row__item-img {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: 50% 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: grayscale(100%);
+  transition: filter 0.5s ease;
+}
+
+.gallery-row__item:hover .gallery-row__item-img {
+  filter: grayscale(0%);
+}
+
+/* ── Lightbox ──────────────────────────────── */
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.92);
+  cursor: pointer;
+  animation: lightboxFadeIn 0.3s ease;
+}
+
+@keyframes lightboxFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gallery-lightbox__img {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 8px;
+  cursor: default;
+  animation: lightboxZoomIn 0.3s ease;
+}
+
+@keyframes lightboxZoomIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.gallery-lightbox__close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.gallery-lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
+  transform: rotate(90deg);
+}
+
+/* ── Lightbox Arrow Buttons ────────────────── */
+.gallery-lightbox__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  line-height: 1;
+}
+
+.gallery-lightbox__arrow:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
+}
+
+.gallery-lightbox__arrow--left {
+  left: 1.5rem;
+}
+
+.gallery-lightbox__arrow--right {
+  right: 1.5rem;
+}

@@ -1,0 +1,29 @@
+.hero-container {
+  @apply relative w-full h-screen flex items-center justify-center bg-black overflow-hidden;
+}
+
+.hero-scene-wrapper {
+  @apply absolute inset-0 z-0;
+  opacity: 0.6;
+}
+
+.hero-content {
+  @apply relative z-10 text-center px-4;
+}
+
+.hero-title {
+  @apply text-5xl md:text-8xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-b from-green-500 to-emerald-800;
+  letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+  @apply text-lg md:text-2xl text-neutral-400 max-w-2xl mx-auto;
+}
+
+.hero-cta {
+  @apply mt-8 flex flex-wrap justify-center gap-4;
+}
+
+.glass-card {
+  @apply backdrop-blur-md bg-white/5 border border-white/10 p-6 rounded-2xl;
+}

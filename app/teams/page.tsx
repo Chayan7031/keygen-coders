@@ -2,53 +2,87 @@
 
 import Image from 'next/image'
 import React from 'react'
+import { FaXTwitter, FaLinkedinIn } from 'react-icons/fa6'
 import { thirdYearMembers, secondYearInterns, Member, convenors } from '@/app/utils/data'
+import './teams.css'
 
-const MemberGrid = ({ members, title }: { members: Member[]; title: string }) => {
+interface TeamSectionProps {
+  members: Member[]
+  title: string
+  subtitle: string
+  description: string
+  watermark: string
+}
+
+const TeamSection = ({ members, title, subtitle, description, watermark }: TeamSectionProps) => {
   return (
-    <>
-      <div className="p-4 mx-auto relative z-10 w-full pt-10 md:pt-20 px-2">
-        <div className="md:text-5xl text-4xl text-center bg-clip-text text-green-500 font-bold">
-          {title}
-        </div>
-      </div>
+    <section className="team-section">
+      <span className="team-subtitle">{subtitle}</span>
+      <h2 className="team-title">{title}</h2>
+      <p className="team-description">{description}</p>
+      <span className="team-watermark">{watermark}</span>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-10">
-        {members.map((member, index) => (
-          <div
-            key={index}
-            className="group aspect-square overflow-hidden rounded-lg relative"
-          >
-
-            <Image
-              width={500}
-              height={500}
-              priority
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              src={member.imageUrl}
-              alt={member.name}
+      <div className="team-cards">
+          {members.map((member, index) => (
+          <div key={member.id} className="team-card">
+            <div
+              className={`team-card-accent ${
+                index % 2 === 0 ? 'team-card-accent--tl' : 'team-card-accent--tr'
+              }`}
             />
 
-            <div className="absolute inset-0 bg-black bg-opacity-0 transition-opacity duration-300 group-hover:bg-opacity-50"></div>
+            <div className="team-card-image-wrapper">
+              <Image
+                src={member.imageUrl}
+                alt={member.name}
+                fill
+                sizes="(max-width: 64rem) 50vw, 25vw"
+                priority
+              />
+            </div>
 
-            <div className="absolute inset-x-0 bottom-0 p-4 text-white text-center translate-y-full transition-transform duration-500 group-hover:-translate-y-1/2">
-              <p className="md:text-lg text-sm font-semibold">{member.name}</p>
+            <div className="team-card-content">
+              <h3>{member.name}</h3>
+              <p className="team-card-role">{member.role || 'Member'}</p>
+              <ul>
+                <li>
+                  <a href={member.linkedin || '#'} target="_blank" rel="noopener noreferrer">
+                    <FaLinkedinIn />
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         ))}
       </div>
-    </>
+    </section>
   )
 }
 
 const Page = () => {
   return (
-    <div className="text-white p-2 pt-28">
-      <MemberGrid members={convenors} title="Our Convenors" />
-      {/* <MemberGrid members={fourthYearMembers} title="Fourth year members" /> */}
-      <MemberGrid members={thirdYearMembers} title="Third year members" />
-      <MemberGrid members={secondYearInterns} title="Second year Interns" />
-      {/* <MemberGrid members={firstYearInterns} title="First year interns" /> */}
+    <div className="min-h-screen bg-black pt-28">
+      <TeamSection
+        members={convenors}
+        title="Convenors"
+        subtitle="meet our"
+        description="The driving force behind KeyGEnCoders — our convenors lead with vision, passion, and dedication."
+        watermark="leads"
+      />
+      <TeamSection
+        members={thirdYearMembers}
+        title="Core Team"
+        subtitle="meet the"
+        description="Our third-year members form the backbone of every project, event, and initiative."
+        watermark="core"
+      />
+      <TeamSection
+        members={secondYearInterns}
+        title="Interns"
+        subtitle="meet the"
+        description="The next generation of innovators — our second-year interns bring fresh ideas and boundless energy."
+        watermark="interns"
+      />
     </div>
   )
 }

@@ -4,8 +4,8 @@ export const opacity = {
         opacity: 0
     },
     enter: {
-        opacity: 0.75,
-        transition: {duration: 1, delay: 0.2}
+        opacity: 1,
+        transition: {duration: 0.5, delay: 0.1}
     },
 }
 
@@ -15,6 +15,6 @@ export const slideUp = {
     },
     exit: {
         top: "-100vh",
-        transition: {duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 5}
+        transition: {duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.3}
     }
 }

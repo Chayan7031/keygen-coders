@@ -2,17 +2,23 @@
 import { Analytics } from '@vercel/analytics/react';
 
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Pixelify_Sans, VT323 } from "next/font/google";
 import "./globals.css";
 import Footer from '@/components/Footer';
 import { about,gallery,events,sponsors,faq } from './page';
 import Navbar from '@/components/navbar';
 
-const font = Poppins(
-  { subsets: ["latin"],
-    weight: '400'
-}
-  );
+const font = Pixelify_Sans({
+  subsets: ["latin"],
+  variable: "--font-pixelify",
+  weight: ["400", "500", "600", "700"],
+});
+
+const vt323 = VT323({
+  subsets: ["latin"],
+  variable: "--font-vt323",
+  weight: "400",
+});
 
 export const metadata: Metadata = {
   title: "KeyGEnCoders",
@@ -42,8 +48,7 @@ export default function RootLayout({
     <html lang="en">
       <body 
       suppressHydrationWarning={true}
-      className={font.className}>
-        {/* <Analytics />  */}
+      className={`${font.variable} ${vt323.variable} font-sans`}>
         <Navbar
         scrollToAbout={about}
         scrollToEvents={events}

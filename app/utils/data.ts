@@ -2,30 +2,37 @@ export interface Member {
   id: number;
   name: string;
   imageUrl: string;
+  role?: string;
+  twitter?: string;
+  linkedin?: string;
 }
 
 export const convenors: Member[] = [
   {
     id: 1,
     name: "Jyotirmoy Bairagya",
+    role: "Convenor",
     imageUrl:
       "https://res.cloudinary.com/dlxpcyiin/image/upload/v1741960533/jyotirmoy_bairagya_f1xi6s.jpg",
   },
   {
     id: 2,
     name: "Ushasi Das",
+    role: "Convenor",
     imageUrl:
       "https://res.cloudinary.com/dlxpcyiin/image/upload/v1741960380/ushasi_das_fddvkj.jpg",
   },
   {
     id: 3,
     name: "Arko Kundu",
+    role: "Convenor",
     imageUrl:
       "https://res.cloudinary.com/dlxpcyiin/image/upload/v1741960367/arko_kundu_ba2i9e.jpg",
   },
   {
     id: 4,
     name: "Debamrita Paul",
+    role: "Convenor",
     imageUrl:
       "https://res.cloudinary.com/db9l85phg/image/upload/v1757883089/Screenshot_2025-09-15_022102_istdyg.png",
   },
@@ -140,7 +147,7 @@ export const thirdYearMembers: Member[] = [
     imageUrl:
       "https://res.cloudinary.com/dlxpcyiin/image/upload/v1740894499/kaif_getc6u.jpg",
   },
-  
+
   {
     id: 7,
     name: "Shatakshi Saha",
@@ -189,7 +196,7 @@ export const thirdYearMembers: Member[] = [
     imageUrl:
       "https://res.cloudinary.com/dlxpcyiin/image/upload/v1740843927/JayKumarLal_ypm4hv.jpg",
   },
-  
+
   {
     id: 15,
     name: "Madhurima Khan",
@@ -208,7 +215,7 @@ export const thirdYearMembers: Member[] = [
     imageUrl:
       "https://res.cloudinary.com/dlxpcyiin/image/upload/v1740823669/Rohit_chowdhury_a30xhk.jpg",
   },
-  
+
 ];
 
 export const secondYearInterns: Member[] = [

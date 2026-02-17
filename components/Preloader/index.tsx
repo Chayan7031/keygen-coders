@@ -1,94 +1,97 @@
 'use client';
 import styles from './style.module.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { opacity, slideUp } from './anim';
+import { slideUp } from './anim';
 
-const Preloader = () => {
-  const [dimension, setDimension] = useState({ width: 0, height: 0 });
-  const [displayText, setDisplayText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentStringIndex, setCurrentStringIndex] = useState(0);
+const terminalMessages = [
+  { text: '*** Welcome to the KeyGEnCoders Mainframe ***', delay: 300 },
+  { text: 'Initializing hardware... [OK]', delay: 400 },
+  { text: 'Loading system files... [OK]', delay: 500 },
+  { text: 'Booting kernel v3.2.1... [OK]', delay: 400 },
+  { text: 'Starting network services... [OK]', delay: 600 },
+  { text: 'Decrypting main content... [DONE]', delay: 500 },
+  { text: 'System ready.', delay: 300 },
+];
 
-  const cppCodeStrings = [
-    '#include <bits/stdc++.h>\n\nusing namespace std;\n\nint main() {\n    cout << "KeyGEnCoders";\n    return 0;\n}',
-    '#include <bits/stdc++.h>\n\nusing namespace std;\n\nint main() {\n    cout << "KeyGEnCoders";\n    return 0;\n}',
-  ];
+interface PreloaderProps {
+  onComplete?: () => void;
+}
 
+const Preloader = ({ onComplete }: PreloaderProps) => {
+  const [lines, setLines] = useState<string[]>([]);
+  const [currentLine, setCurrentLine] = useState('');
+  const [msgIndex, setMsgIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [done, setDone] = useState(false);
+  const historyRef = useRef<HTMLUListElement>(null);
+
+  // Type out messages character by character
   useEffect(() => {
-    setDimension({ width: window.innerWidth, height: window.innerHeight });
-  }, []);
+    if (done) return;
 
-  useEffect(() => {
-    if (currentIndex < cppCodeStrings[currentStringIndex].length) {
+    if (msgIndex >= terminalMessages.length) {
+      setDone(true);
+      onComplete?.();
+      return;
+    }
+
+    const msg = terminalMessages[msgIndex];
+
+    if (charIndex < msg.text.length) {
+      // Type next character
       const timer = setTimeout(() => {
-        setDisplayText((prev) => prev + cppCodeStrings[currentStringIndex][currentIndex]);
-        setCurrentIndex(currentIndex + 1);
-      }, 50);
-
+        setCurrentLine((prev) => prev + msg.text[charIndex]);
+        setCharIndex(charIndex + 1);
+      }, 30 + Math.random() * 20);
       return () => clearTimeout(timer);
     } else {
-      const resetTimer = setTimeout(() => {
-        setDisplayText('');
-        setCurrentIndex(0);
-        setCurrentStringIndex((currentStringIndex + 1) % cppCodeStrings.length);
-      }, 2000);
-
-      return () => clearTimeout(resetTimer);
+      // Finished this line — push to history, move to next
+      const timer = setTimeout(() => {
+        setLines((prev) => [...prev, msg.text]);
+        setCurrentLine('');
+        setCharIndex(0);
+        setMsgIndex(msgIndex + 1);
+      }, msg.delay);
+      return () => clearTimeout(timer);
     }
-  }, [currentIndex, currentStringIndex]);
+  }, [msgIndex, charIndex, done]);
 
+  // Auto-scroll terminal to bottom
+  useEffect(() => {
+    if (historyRef.current) {
+      historyRef.current.scrollTop = historyRef.current.scrollHeight;
+    }
+  }, [lines, currentLine]);
+
+  // Lock body scroll
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-  
     return () => {
       document.body.style.overflow = 'auto';
     };
-  }, [currentIndex, currentStringIndex]);
-  
-
-  const lineColors = [
-    'text-green-400',
-    'text-blue-400',
-    'text-yellow-400',
-    'text-purple-400',
-    'text-pink-400',
-    'text-red-400',
-    'text-cyan-400',
-  ];
-
-  const lines = displayText.split('\n');
-
-  const initialPath = `M0 0 L${dimension.width} 0 L${dimension.width} ${dimension.height} Q${dimension.width / 2} ${dimension.height + 300} 0 ${dimension.height}  L0 0`;
-  const targetPath = `M0 0 L${dimension.width} 0 L${dimension.width} ${dimension.height} Q${dimension.width / 2} ${dimension.height} 0 ${dimension.height}  L0 0`;
-
-  const curve = {
-    initial: {
-      d: initialPath,
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] },
-    },
-    exit: {
-      d: targetPath,
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: 0.3 },
-    },
-  };
+  }, []);
 
   return (
     <motion.div variants={slideUp} initial="initial" exit="exit" className={styles.introduction}>
-      {dimension.width > 0 && (
-        <>
-          <motion.div variants={opacity} initial="initial" animate="enter" className="text-white text-center z-20">
-            {lines.map((line, i) => (
-              <pre key={i} className={`${lineColors[i % lineColors.length]} font-mono whitespace-pre overflow-visible m-0`}>
-                {line}
-              </pre>
-            ))}
-          </motion.div>
-          <svg>
-            <motion.path variants={curve} initial="initial" exit="exit"></motion.path>
-          </svg>
-        </>
-      )}
+      <div className={styles.terminal}>
+        <ul ref={historyRef} className={styles.terminalHistory}>
+          {lines.map((line, i) => (
+            <li key={i}>
+              <span className={styles.prompt}>&gt; </span>
+              {line}
+            </li>
+          ))}
+        </ul>
+
+        {!done && (
+          <div className={styles.terminalInput}>
+            <span className={styles.prompt}>&gt; </span>
+            <span>{currentLine}</span>
+            <span className={styles.caret} />
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 };
