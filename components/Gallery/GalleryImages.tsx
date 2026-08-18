@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import { gsap } from "gsap";
 import { galleryItems } from "@/app/utils/GalleryItems";
 import "./gallery-grid.css";
 
@@ -35,7 +36,7 @@ const GalleryImages = () => {
   const rafId = useRef<number | undefined>();
   const mousePos = useRef({ x: 0, y: 0 });
   const winSize = useRef({ w: 0, h: 0 });
-  const gsapRef = useRef<typeof import("gsap").default | null>(null);
+  const gsapRef = useRef<typeof gsap | null>(null);
   const [mounted, setMounted] = useState(false);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
@@ -75,13 +76,7 @@ const GalleryImages = () => {
 
   useEffect(() => {
     setMounted(true);
-
-    // Dynamically import GSAP (client-only)
-    const loadGsap = async () => {
-      const gsapModule = await import("gsap");
-      gsapRef.current = gsapModule.default;
-    };
-    loadGsap();
+    gsapRef.current = gsap;
 
     winSize.current = { w: window.innerWidth, h: window.innerHeight };
     mousePos.current = { x: winSize.current.w / 2, y: winSize.current.h / 2 };

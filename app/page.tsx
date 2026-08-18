@@ -28,18 +28,18 @@ const scrollToElement = (ref: HTMLDivElement | null) => {
   });
 };
 
-export const about = () => scrollToElement(refs.aboutRef);
-export const events = () => scrollToElement(refs.eventsRef);
-export const gallery = () => scrollToElement(refs.galleryRef);
-export const sponsors = () => scrollToElement(refs.brandsRef);
-export const faq = () => scrollToElement(refs.infoRef);
-
 export default function Home() {
   const aboutRef = useRef<HTMLDivElement>(null);
   const eventsRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
   const brandsRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
+
+  const scrollToAbout = () => scrollToElement(aboutRef.current);
+  const scrollToEvents = () => scrollToElement(eventsRef.current);
+  const scrollToGallery = () => scrollToElement(galleryRef.current);
+  const scrollToBrands = () => scrollToElement(brandsRef.current);
+  const scrollToInfo = () => scrollToElement(infoRef.current);
 
   useEffect(() => {
     refs.aboutRef = aboutRef.current;
@@ -61,11 +61,11 @@ export default function Home() {
 
 
       <Navbar
-        scrollToAbout={about}
-        scrollToEvents={events}
-        scrollToGallery={gallery}
-        scrollToBrands={sponsors}
-        scrollToInfo={faq}
+        scrollToAbout={scrollToAbout}
+        scrollToEvents={scrollToEvents}
+        scrollToGallery={scrollToGallery}
+        scrollToBrands={scrollToBrands}
+        scrollToInfo={scrollToInfo}
       />
 
       <Hero />
