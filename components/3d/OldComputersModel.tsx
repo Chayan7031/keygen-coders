@@ -8,9 +8,39 @@ Title: Old Computers
 */
 
 import * as THREE from 'three'
-import React from 'react'
-import { useGLTF, useAnimations } from '@react-three/drei'
+import React, { useMemo } from 'react'
+import { useGLTF, useAnimations, useTexture } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
+
+function normalizeUVs(geometry: THREE.BufferGeometry, flipU = false): THREE.BufferGeometry {
+  const cloned = geometry.clone()
+  const uvAttr = cloned.getAttribute('uv') as THREE.BufferAttribute
+  if (!uvAttr) return cloned
+
+  const uvArray = new Float32Array(uvAttr.array as Float32Array)
+  let minU = Infinity, maxU = -Infinity, minV = Infinity, maxV = -Infinity
+
+  for (let i = 0; i < uvArray.length; i += 2) {
+    minU = Math.min(minU, uvArray[i])
+    maxU = Math.max(maxU, uvArray[i])
+    minV = Math.min(minV, uvArray[i + 1])
+    maxV = Math.max(maxV, uvArray[i + 1])
+  }
+
+  const rangeU = maxU - minU || 1
+  const rangeV = maxV - minV || 1
+
+  for (let i = 0; i < uvArray.length; i += 2) {
+    let u = (uvArray[i] - minU) / rangeU
+    const v = (uvArray[i + 1] - minV) / rangeV
+    if (flipU) u = 1 - u
+    uvArray[i] = u
+    uvArray[i + 1] = 1 - v
+  }
+
+  cloned.setAttribute('uv', new THREE.BufferAttribute(uvArray, 2))
+  return cloned
+}
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -142,61 +172,146 @@ type GLTFResult = GLTF & {
   animations: THREE.AnimationClip[]
 }
 
-export function Model({ texColor = '#ffffff', screenColor = '#ffffff', animIndex = 0, ...props }: any) {
+export interface SingleScreenSettings {
+  enabled: boolean
+  scale: number
+  posX: number
+  posY: number
+  glow: number
+}
+
+export const SCREEN_LABELS = [
+  'Center Bottom',
+  'Left Mid',
+  'Far Left Bottom',
+  'Right Bottom',
+  'Right Mid',
+  'Far Left Mid',
+  'Far Left Top',
+  'Center Top',
+  'Right Top',
+]
+
+export const DEFAULT_SCREEN: SingleScreenSettings = {
+  enabled: true,
+  scale: 1,
+  posX: 0,
+  posY: 0,
+  glow: 1.2,
+}
+
+
+const SCREEN_NODES = [
+  'Object_207', 'Object_210', 'Object_213', 'Object_216',
+  'Object_219', 'Object_222', 'Object_225', 'Object_228', 'Object_231',
+] as const
+
+
+const MIRRORED_SCREENS = new Set([7])
+
+export function Model({ texColor = '#ffffff', screenColor = '#ffffff', animIndex = 0, perScreenSettings, ...props }: any) {
   const group = React.useRef<THREE.Group>(null)
   const { nodes, materials, animations } = useGLTF('/old_computers.glb') as unknown as GLTFResult
   const { actions } = useAnimations(animations, group)
+
+  const screenImage = useTexture('/images/screen_display.png')
+
+  const screenGeometries = useMemo(() => {
+    return SCREEN_NODES.map((nodeName, idx) => {
+      const mesh = nodes[nodeName] as THREE.Mesh
+      return normalizeUVs(mesh.geometry, MIRRORED_SCREENS.has(idx))
+    })
+  }, [nodes])
+
+  const screenMaterials = useMemo(() => {
+    return SCREEN_LABELS.map(() => {
+      const tex = screenImage.clone()
+      tex.flipY = false
+      tex.colorSpace = THREE.SRGBColorSpace
+      tex.wrapS = THREE.ClampToEdgeWrapping
+      tex.wrapT = THREE.ClampToEdgeWrapping
+      tex.minFilter = THREE.LinearFilter
+      tex.magFilter = THREE.LinearFilter
+      tex.needsUpdate = true
+
+      return new THREE.MeshStandardMaterial({
+        map: tex,
+        emissiveMap: tex,
+        emissive: new THREE.Color(0xffffff),
+        emissiveIntensity: 1.2,
+        toneMapped: false,
+        side: THREE.DoubleSide,
+      })
+    })
+  }, [screenImage])
+
+  React.useEffect(() => {
+    if (!perScreenSettings) return
+    screenMaterials.forEach((mat, idx) => {
+      const s: SingleScreenSettings = perScreenSettings[idx] || DEFAULT_SCREEN
+      const tex = mat.map as THREE.Texture
+      if (tex) {
+        tex.repeat.set(s.scale, s.scale)
+        tex.offset.set(s.posX, s.posY)
+        tex.needsUpdate = true
+      }
+      mat.emissiveIntensity = s.glow
+      mat.needsUpdate = true
+    })
+  }, [perScreenSettings, screenMaterials])
 
   React.useEffect(() => {
     if (actions) {
       const actionNames = Object.keys(actions)
       if (actionNames.length > 0) {
-        // Stop all current animations
         Object.values(actions).forEach(action => action?.stop())
-        // Start selected animation
+
         const selectedAnim = actionNames[animIndex] || actionNames[0]
         actions[selectedAnim]?.reset().fadeIn(0.5).play()
       }
     }
   }, [actions, animIndex])
 
+  const settings: SingleScreenSettings[] = perScreenSettings || SCREEN_LABELS.map(() => DEFAULT_SCREEN)
+  const getMat = (idx: number) => settings[idx]?.enabled ? screenMaterials[idx] : materials.Screen
+
   return (
     <group ref={group} {...props} dispose={null}>
       <group position={[0.27, 1.529, -2.613]}>
         <mesh geometry={nodes.Object_206.geometry} material={materials.Texture} material-color={texColor} />
-        <mesh geometry={nodes.Object_207.geometry} material={materials.Screen} material-color={screenColor} />
+        <mesh geometry={settings[0]?.enabled ? screenGeometries[0] : nodes.Object_207.geometry} material={getMat(0)} material-color={settings[0]?.enabled ? undefined : screenColor} />
       </group>
       <group position={[-1.43, 2.496, -1.8]} rotation={[0, 1.002, 0]}>
         <mesh geometry={nodes.Object_209.geometry} material={materials.Texture} material-color={texColor} />
-        <mesh geometry={nodes.Object_210.geometry} material={materials.Screen} material-color={screenColor} />
+        <mesh geometry={settings[1]?.enabled ? screenGeometries[1] : nodes.Object_210.geometry} material={getMat(1)} material-color={settings[1]?.enabled ? undefined : screenColor} />
       </group>
       <group position={[-2.731, 0.629, -0.522]} rotation={[0, 1.087, 0]}>
         <mesh geometry={nodes.Object_212.geometry} material={materials.Texture} material-color={texColor} />
-        <mesh geometry={nodes.Object_213.geometry} material={materials.Screen} material-color={screenColor} />
+        <mesh geometry={settings[2]?.enabled ? screenGeometries[2] : nodes.Object_213.geometry} material={getMat(2)} material-color={settings[2]?.enabled ? undefined : screenColor} />
       </group>
       <group position={[1.845, 0.377, -1.771]} rotation={[0, -Math.PI / 9, 0]}>
         <mesh geometry={nodes.Object_215.geometry} material={materials.Texture} material-color={texColor} />
-        <mesh geometry={nodes.Object_216.geometry} material={materials.Screen} material-color={screenColor} />
+        <mesh geometry={settings[3]?.enabled ? screenGeometries[3] : nodes.Object_216.geometry} material={getMat(3)} material-color={settings[3]?.enabled ? undefined : screenColor} />
       </group>
       <group position={[3.11, 2.145, -0.18]} rotation={[0, -0.793, 0]} scale={0.81}>
         <mesh geometry={nodes.Object_218.geometry} material={materials.Texture} material-color={texColor} />
-        <mesh geometry={nodes.Object_219.geometry} material={materials.Screen} material-color={screenColor} />
+        <mesh geometry={settings[4]?.enabled ? screenGeometries[4] : nodes.Object_219.geometry} material={getMat(4)} material-color={settings[4]?.enabled ? undefined : screenColor} />
       </group>
       <group position={[-3.417, 3.056, 1.303]} rotation={[0, 1.222, 0]} scale={0.9}>
         <mesh geometry={nodes.Object_221.geometry} material={materials.Texture} material-color={texColor} />
-        <mesh geometry={nodes.Object_222.geometry} material={materials.Screen} material-color={screenColor} />
+        <mesh geometry={settings[5]?.enabled ? screenGeometries[5] : nodes.Object_222.geometry} material={getMat(5)} material-color={settings[5]?.enabled ? undefined : screenColor} />
       </group>
       <group position={[-3.899, 4.287, -2.642]} rotation={[0, 0.539, 0]}>
         <mesh geometry={nodes.Object_224.geometry} material={materials.Texture} material-color={texColor} />
-        <mesh geometry={nodes.Object_225.geometry} material={materials.Screen} material-color={screenColor} />
+        <mesh geometry={settings[6]?.enabled ? screenGeometries[6] : nodes.Object_225.geometry} material={getMat(6)} material-color={settings[6]?.enabled ? undefined : screenColor} />
       </group>
       <group position={[0.992, 4.287, -4.209]} rotation={[0, 0.429, 0]} scale={[-1, 1, 1]}>
         <mesh geometry={nodes.Object_227.geometry} material={materials.Texture} material-color={texColor} />
-        <mesh geometry={nodes.Object_228.geometry} material={materials.Screen} material-color={screenColor} />
+        <mesh geometry={settings[7]?.enabled ? screenGeometries[7] : nodes.Object_228.geometry} material={getMat(7)} material-color={settings[7]?.enabled ? undefined : screenColor} />
       </group>
       <group position={[4.683, 4.29, -1.558]} rotation={[0, -Math.PI / 3, 0]}>
         <mesh geometry={nodes.Object_230.geometry} material={materials.Texture} material-color={texColor} />
-        <mesh geometry={nodes.Object_231.geometry} material={materials.Screen} material-color={screenColor} />
+        <mesh geometry={settings[8]?.enabled ? screenGeometries[8] : nodes.Object_231.geometry} material={getMat(8)} material-color={settings[8]?.enabled ? undefined : screenColor} />
       </group>
       <mesh geometry={nodes.Object_4.geometry} material={materials.Texture} material-color={texColor} position={[0.165, 0.794, -1.972]} rotation={[-0.544, 0.929, -1.119]} scale={0.5} />
       <mesh geometry={nodes.Object_6.geometry} material={materials.Texture} material-color={texColor} position={[-2.793, 0.27, 1.816]} rotation={[-1.44, 1.219, 1.432]} scale={0.5} />

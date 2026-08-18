@@ -3,8 +3,8 @@ import { motion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import HeroScene from '../3d/HeroScene'
-import FuzzyText from '../FuzzyText/Index'
-import FuzzyImage from '../FuzzyImage/Index'
+import FuzzyText from '../FuzzyText'
+import FuzzyImage from '../FuzzyImage'
 import './Hero.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -14,6 +14,7 @@ export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [introPhase, setIntroPhase] = useState(0)
 
   const { scrollDistance, fadeOffset, fadeDuration } = {
     scrollDistance: 400,
@@ -56,18 +57,30 @@ export default function Hero() {
     }
   }, [scrollDistance, fadeOffset, fadeDuration])
 
+  useEffect(() => {
+    const t1 = setTimeout(() => setIntroPhase(1), 400)
+    const t2 = setTimeout(() => setIntroPhase(2), 2000)
+    const t3 = setTimeout(() => setIntroPhase(3), 2800)
+
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+      clearTimeout(t3)
+    }
+  }, [])
+
   return (
     <div ref={containerRef} className="w-full relative bg-black">
       <section ref={heroRef} className="hero-container fixed inset-0">
         <div className="hero-scene-wrapper">
-          <HeroScene scrollProgress={scrollProgress} />
+          <HeroScene scrollProgress={scrollProgress} introPhase={introPhase} />
         </div>
 
         <div className="hero-content relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            animate={introPhase >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 1, ease: "easeOut" }}
           >
             <div className="hero-title-wrapper flex justify-center">
               <FuzzyText 
@@ -79,39 +92,13 @@ export default function Hero() {
                 KeyGEnCoders
               </FuzzyText>
             </div>
-            {/* <div className="hero-subtitle-wrapper flex flex-col items-center gap-1">
-              <FuzzyText 
-                baseIntensity={0.1} 
-                hoverIntensity={0.2} 
-                fontSize="clamp(0.55rem, 2vw, 1.5rem)"
-                color="#a3a3a3"
-              >
-                The elite coding community of
-              </FuzzyText>
-              <FuzzyText 
-                baseIntensity={0.1} 
-                hoverIntensity={0.2} 
-                fontSize="clamp(0.55rem, 2vw, 1.5rem)"
-                color="#a3a3a3"
-              >
-                Kalyani Government Engineering College.
-              </FuzzyText>
-              <FuzzyText 
-                baseIntensity={0.1} 
-                hoverIntensity={0.2} 
-                fontSize="clamp(0.55rem, 2vw, 1.5rem)"
-                color="#a3a3a3"
-              >
-                Pushing the boundaries of innovation and technology.
-              </FuzzyText>
-            </div> */}
           </motion.div>
 
           <motion.div 
             className="hero-logo-wrapper mt-10 flex justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            animate={introPhase >= 2 ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.8, delay: 0, ease: "easeOut" }}
           >
             <FuzzyImage 
               src="/logo/logo.png" 
@@ -126,9 +113,14 @@ export default function Hero() {
         </div>
 
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1">
+          <motion.div 
+            className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1"
+            initial={{ opacity: 0 }}
+            animate={introPhase >= 3 ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
             <div className="w-1 h-2 bg-green-500 rounded-full" />
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>

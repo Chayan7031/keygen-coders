@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import Navbar from "@/components/navbar";
+import { useRef, useEffect } from "react";
+import Navbar from "@/components/Navbar";
 import SliderOne from "@/components/ui/slider";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import WebsiteDesign from "./website-design";
 import Brands from "./brands";
 import Services from "./services";
 import FAQS from "./faq";
-import Preloader from "@/components/Preloader";
 import About from "@/components/About/About";
 import Hero from "@/components/Hero/Hero";
 
@@ -50,19 +49,6 @@ export default function Home() {
     refs.infoRef = infoRef.current;
   }, []);
 
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Lock scroll during preloader
-  useEffect(() => {
-    if (isLoading) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.height = '100vh';
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.height = '';
-    }
-  }, [isLoading]);
-
   useEffect(() => {
     (async () => {
       const LocomotiveScroll = (await import("locomotive-scroll")).default;
@@ -70,17 +56,9 @@ export default function Home() {
     })();
   }, []);
 
-  const handlePreloaderComplete = () => {
-    setTimeout(() => {
-      setIsLoading(false);
-      document.body.style.cursor = "default";
-      window.scrollTo(0, 0);
-    }, 500); // brief pause after "System ready." before sliding out
-  };
-
   return (
     <main className="bg-black antialiased relative overflow-hidden">
-      <AnimatePresence mode="wait">{isLoading && <Preloader onComplete={handlePreloaderComplete} />}</AnimatePresence>
+
 
       <Navbar
         scrollToAbout={about}

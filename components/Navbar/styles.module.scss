@@ -1,0 +1,161 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+  background: transparent;
+
+  &.scrolled {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
+    padding: 0.8rem 1.5rem;
+  }
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.logoImage {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+
+  @media (min-width: 768px) {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+.navButton {
+  position: fixed;
+  right: 0px;
+  z-index: 10000;
+
+  .button {
+    position: relative;
+    margin: 20px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #1bd506;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    @media (min-width: 768px) {
+      width: 72px;
+      height: 72px;
+    }
+  }
+  
+  .burger {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    &::after, &::before {
+      content: "";
+      display: block;
+      height: 2px;
+      width: 36%;
+      margin: auto;
+      background-color: black;
+      position: relative;
+      transition: transform 0.3s;
+    }
+
+    &::after {
+      top: -4px;
+    }
+
+    &::before {
+      top: 4px;
+    }
+  }
+  
+  .burgerActive {
+    &::after {
+      transform: rotate(45deg);
+      top: -1px;
+    }
+
+    &::before {
+      transform: rotate(-45deg);
+      top: 0px;
+    }
+  }
+}
+
+.headerButtonContainer {
+  position: fixed;
+  right: 0px;
+  z-index: 100;
+  transform: scale(1);
+
+  .button {
+    position: relative;
+    margin: 20px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #1bd506;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    @media (min-width: 768px) {
+      width: 72px;
+      height: 72px;
+    }
+  }
+  
+  .burger {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    &::after, &::before {
+      content: "";
+      display: block;
+      height: 2px;
+      width: 36%;
+      margin: auto;
+      background-color: black;
+      position: relative;
+      transition: transform 0.3s;
+    }
+
+    &::after {
+      top: -4px;
+    }
+
+    &::before {
+      top: 4px;
+    }
+  }
+  
+  .burgerActive {
+    &::after {
+      transform: rotate(45deg);
+      top: -1px;
+    }
+
+    &::before {
+      transform: rotate(-45deg);
+      top: 0px;
+    }
+  }
+}

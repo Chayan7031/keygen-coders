@@ -1,7 +1,7 @@
 "use client";
 
 import { InteractiveGridPattern } from "../ui/interactive-grid-pattern";
-import { IconCloudDemo } from "../IconCloud/Index";
+import { IconCloudDemo } from "../IconCloud";
 
 export default function About() {
   const content = "KeyGEnCoders is the official coding club of the Kalyani Government Engineering college. It is a group of students who are passionate about coding and programming. The club since its establishment has been working to promote coding culture in the college. The club organizes various events, workshops, and competitions to help students learn and grow in the field of coding.";

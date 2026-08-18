@@ -5,8 +5,6 @@ import type { Metadata } from "next";
 import { Pixelify_Sans, VT323 } from "next/font/google";
 import "./globals.css";
 import Footer from '@/components/Footer';
-import { about,gallery,events,sponsors,faq } from './page';
-import Navbar from '@/components/navbar';
 
 const font = Pixelify_Sans({
   subsets: ["latin"],
@@ -49,13 +47,6 @@ export default function RootLayout({
       <body 
       suppressHydrationWarning={true}
       className={`${font.variable} ${vt323.variable} font-sans`}>
-        <Navbar
-        scrollToAbout={about}
-        scrollToEvents={events}
-        scrollToGallery={gallery}
-        scrollToBrands={sponsors}
-        scrollToInfo={faq}
-        />
         {children}
         <Footer />
         </body>

@@ -1,15 +1,16 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, Float } from '@react-three/drei'
 import * as THREE from 'three'
-import { Model } from './OldComputersModel'
+import { Model, DEFAULT_SCREEN, SCREEN_LABELS } from './OldComputersModel'
 
 interface HeroSceneProps {
   className?: string;
   scrollProgress?: number;
+  introPhase?: number;
 }
 
-function SceneContent({ scrollProgress = 0 }: { scrollProgress: number }) {
+function SceneContent({ scrollProgress = 0, introPhase = 0 }: { scrollProgress: number; introPhase: number }) {
   const { 
     modelX,
     modelY, 
@@ -47,8 +48,34 @@ function SceneContent({ scrollProgress = 0 }: { scrollProgress: number }) {
   }
 
   const { camera, mouse } = useThree()
+
+  const introStartZ = 25
+  const introComplete = useRef(false)
   
   useFrame((state) => {
+    if (introPhase === 0) {
+      state.camera.position.set(startX, startY, introStartZ)
+      state.camera.lookAt(modelX, lookAtY, 0)
+      return
+    }
+
+    if (introPhase >= 1 && !introComplete.current) {
+      const currentZ = state.camera.position.z
+      const targetNormalZ = startZ
+      const newZ = THREE.MathUtils.lerp(currentZ, targetNormalZ, 0.035)
+      
+      state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, startX, 0.05)
+      state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, startY, 0.05)
+      state.camera.position.z = newZ
+
+      if (Math.abs(newZ - targetNormalZ) < 0.1) {
+        introComplete.current = true
+      }
+
+      state.camera.lookAt(modelX, lookAtY, 0)
+      return
+    }
+
     const limitedProgress = Math.min(scrollProgress, zoomLimit)
 
     const targetX = THREE.MathUtils.lerp(startX, maxZoomX, limitedProgress)
@@ -84,6 +111,7 @@ function SceneContent({ scrollProgress = 0 }: { scrollProgress: number }) {
             texColor={texColor}
             screenColor={screenColor}
             animIndex={0}
+            perScreenSettings={SCREEN_LABELS.map(() => ({ ...DEFAULT_SCREEN }))}
           />
         </Float>
         <Environment preset="city" />
@@ -92,16 +120,16 @@ function SceneContent({ scrollProgress = 0 }: { scrollProgress: number }) {
   )
 }
 
-export default function HeroScene({ className, scrollProgress = 0 }: HeroSceneProps) {
+export default function HeroScene({ className, scrollProgress = 0, introPhase = 0 }: HeroSceneProps) {
   return (
     <div className={`w-full h-full relative overflow-hidden ${className}`}>
       <Canvas
         shadows
         dpr={[1, 2]}
-        camera={{ position: [0, 5, 12], fov: 45 }}
+        camera={{ position: [0, 2, 25], fov: 45 }}
       >
         <color attach="background" args={['#000000']} />
-        <SceneContent scrollProgress={scrollProgress} />
+        <SceneContent scrollProgress={scrollProgress} introPhase={introPhase} />
       </Canvas>
     </div>
   )
